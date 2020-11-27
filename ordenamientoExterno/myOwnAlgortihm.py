@@ -53,7 +53,7 @@ def makeTestData(n):
 
 if __name__ == '__main__':
     print("Main")
-    data = makeTestData(100)
+    data = makeTestData(2)
     #data = [8529148895, 4177311179, 7851008984, 6621525306, 5605829259, 6197661161, 6971668060, 6621506146, 9222912901, 1475949613]
     print(data)
     sortedData = algorithm(data)

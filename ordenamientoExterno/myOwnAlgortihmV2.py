@@ -13,30 +13,34 @@ def getLen(data):
         count += 1
     return count
 
-def compareAndAppend(num, data, unknow = 0, dataOrg = []):
-    dataOrg = data
+def compareAndAppend(num, data, lenDataSorted, first = 0, last = 1):
     flag = False
-    if getLen(data) > 1:
-        maxNum = data[-1]
-        minNum = data[0]
-        if num > maxNum:
-            unknow += 1
+    if lenDataSorted > 0:
+        maxNum = data[-last]
+        minNum = data[first]
+        if num >= maxNum:
             flag = True
-            return getLen(data)
-        elif num < minNum:
-            unknow -= 1
+            if last == 1:
+                last = lenDataSorted
+            else:
+                last = lenDataSorted - last
+            data.insert(last, num)
+        elif num <= minNum:
             flag = True
-            return 0
+            data.insert(first, num)
         elif not flag:
-                middle = getLen(data)
-                if num > middle:
-                    unknow += 1
-                    return compareAndAppend(num, data[middle:-1], unknow, dataOrg)
-                elif num < middle:
-                    unknow -= 1
-                    return compareAndAppend(num, data[0:middle], unknow, dataOrg)
+                middle = lenDataSorted // 2
+                if lenDataSorted > middle:
+                    if num > data[middle]:
+                        return compareAndAppend(num, data, lenDataSorted, first = first, last = middle)
+                    elif num < data[middle]:
+                        return compareAndAppend(num, data, lenDataSorted, first = middle, last = last)
+                    else:
+                        return data
                 else:
-                    return middle
+                    return data.insert(middle, num)
+    return data
+    """
     elif getLen(data) == 1:
         if dataOrg[unknow] > num:
             return compareAndAppend(num, dataOrg[:unknow], unknow)
@@ -46,23 +50,24 @@ def compareAndAppend(num, data, unknow = 0, dataOrg = []):
             return unknow
     else:
         return 0
-
-def compare(data):
-    for i in range(len(data)):
-        if data[i] > data[i+1]:
-            return True
+    """
 
 def algorithm(data):
     count = 0
+    size = getLen(data)
+    sizeSorted = 0
     dataSorted = []
     dataSorted.append(data[0])
-    while getLen(data) > 1:
-        count += 1 + getLen(data)
+    sizeSorted += 1
+    count += size
+    while size > 1:
+        count += 1
         data = reshapeData(data, [0])
-        pos = compareAndAppend(data[0], dataSorted)
-        dataSorted.insert(pos, data[0])
-    print(count)
-    print(dataSorted)
+        dataSorted = compareAndAppend(data[0], dataSorted, sizeSorted)
+        sizeSorted += 1
+        size -= 1
+        print(dataSorted)
+    return dataSorted
 
 def makeTestData(n):
     data = []
@@ -72,11 +77,15 @@ def makeTestData(n):
 
 if __name__ == '__main__':
     print("Main")
+    #data = [1, 2, 0, 6]
+    #data = [14, 6, 16, 8]
+    #data = [13, 8, 6, 12]
+    #data = [8, 4, 6]
     data = makeTestData(10)
     #data = [8529148895, 4177311179, 7851008984, 6621525306, 5605829259, 6197661161, 6971668060, 6621506146, 9222912901, 1475949613]
     print(data)
     sortedData = algorithm(data)
-    print(sortedData)
+    #print(sortedData)
     #best = algorithm(sortedData)
     #worse = algorithm(best[::-1])
 
