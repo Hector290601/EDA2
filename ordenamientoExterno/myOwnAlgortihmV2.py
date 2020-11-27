@@ -2,6 +2,8 @@
 import random
 import numpy as np
 
+count = 0
+
 def reshapeData(data, targets):
     for i in targets:
         data.pop(i)
@@ -40,17 +42,6 @@ def compareAndAppend(num, data, lenDataSorted, first = 0, last = 1):
                 else:
                     return data.insert(middle, num)
     return data
-    """
-    elif getLen(data) == 1:
-        if dataOrg[unknow] > num:
-            return compareAndAppend(num, dataOrg[:unknow], unknow)
-        elif dataOrg[unknow] < num:
-            return compareAndAppend(num, dataOrg[:unknow], unknow)
-        elif dataOrg[unknow] == num:
-            return unknow
-    else:
-        return 0
-    """
 
 def algorithm(data):
     count = 0
@@ -66,7 +57,6 @@ def algorithm(data):
         dataSorted = compareAndAppend(data[0], dataSorted, sizeSorted)
         sizeSorted += 1
         size -= 1
-        print(dataSorted)
     return dataSorted
 
 def makeTestData(n):
@@ -76,16 +66,8 @@ def makeTestData(n):
     return data
 
 if __name__ == '__main__':
-    print("Main")
-    #data = [1, 2, 0, 6]
-    #data = [14, 6, 16, 8]
-    #data = [13, 8, 6, 12]
-    #data = [8, 4, 6]
     data = makeTestData(10)
-    #data = [8529148895, 4177311179, 7851008984, 6621525306, 5605829259, 6197661161, 6971668060, 6621506146, 9222912901, 1475949613]
-    print(data)
     sortedData = algorithm(data)
-    #print(sortedData)
     #best = algorithm(sortedData)
     #worse = algorithm(best[::-1])
 
