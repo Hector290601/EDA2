@@ -14,7 +14,7 @@ def getLen(data):
         count1 += 1
     return count1
 
-def extern(data):
+def extern(data, f):
     global count, baseGlobal, bestGlobal, worseGlobal
     dataLittle = []
     lenData = getLen(data)
@@ -30,13 +30,14 @@ def extern(data):
         best += bestNew
         worse += worseNew
         dataLittle.append(dataSorted)
+        writeToFile(dataSorted, 'little', f)
         last = i
     baseGlobal += base
     bestGlobal += best
     worseGlobal += worse
     return dataLittle
 
-def joinAll(data):
+def joinAll(data, f):
     global count, baseGlobal, bestGlobal, worseGlobal
     dataJoin = []
     littleData = []
@@ -52,12 +53,15 @@ def joinAll(data):
         for j in data:
             firstData += j[last : i]
         littleData.append(firstData)
-        writeToFile(firstData)
+        writeToFile(firstData, 'join', f)
         last = i
     baseGlobal += base
     bestGlobal += best
     worseGlobal += worse
+    j = 0
     for i in littleData:
+        readFromFile(j, f)
+        j += 1
         count += 1
         baseNew, bestNew, worseNew, dataSorted = toPlot(i)
         base += baseNew
@@ -71,23 +75,31 @@ def joinAll(data):
 
 def toPlotExtern(data):
     global count, baseGlobal, bestGlobal, worseGlobal
-    dataLittle = extern(data)
-    joined = joinAll(dataLittle)
+    file = None
+    file = open("dataTmp.csv", "w+", encoding='utf-8')
+    dataLittle = extern(data, file)
+    joined = joinAll(dataLittle, file)
     baseGlobal += count
     bestGlobal += count
     worseGlobal += count
+    if file:
+        file.close
     return baseGlobal, bestGlobal, worseGlobal
 
-def writeToFile(data):
-    file = None
-    try:
-        file = open("dataTmp.csv", "w+", encoding='utf-8')
-        file.write(str(data))
-    except:
-        print("No fué posible abrir el archivo")
-    finally:
-        if file:
-            file.close
+def writeToFile(data, typeData, file):
+    if typeData == 'little':
+       file.write('L,' + str(data) + '\n')
+    elif typeData == 'join':
+       file.write('J,' + str(data) + '\n')
+    elif typeData == 'end':
+       file.write('E,' + str(data) + '\n')
+
+def readFromFile(n, file):
+    lines = file.read()
+    print(file.read())
+    """
+    line = lines[n - 1]
+    print(line)"""
 
 def makeTestData(n):
     data = []
