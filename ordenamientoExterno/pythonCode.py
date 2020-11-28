@@ -1,27 +1,42 @@
 #-*-coding:utf-8-*-
 import random
 
+count = 0
+lenData = 0
+
 def algorithm(data):
     count = 0
-    flag = False
-    dataSorted = [[], [], [], [], [], [], [], [], [], []]
-    key = len(dataSorted)
-    for i in data:
+    flag = True
+    while flag:
         count += 1
-        mod = i % key
-        print(type(dataSorted))
-        dataSorted[mod].append(i)
-        if len(dataSorted[mod]) > 1:
-            for i in range(len(dataSorted[mod])):
-                count += 1
-                if i + 1 < len(dataSorted[mod]):
-                    if dataSorted[mod][i] < dataSorted[mod][i+1]:
-                        dataSorted[mod][i], dataSorted[mod][i+1] = dataSorted[mod][i+1], dataSorted[mod][i]
-                        flag = False
-                    flag = not flag
-                    if flag:
-                        break
-    return dataSorted
+        for i in range(len(data) -3):
+            count += 1
+            if data[i] > data[i+1] :
+                data[i], data[i+1] = data[i+1], data[i]
+                flag = False
+            if data[i] > data[i+2] :
+                data[i], data[i+2] = data[i+2], data[i]
+                flag = False
+            if data[i] > data[i+3] :
+                data[i], data[i+3] = data[i+3], data[i]
+                flag = False
+            if data[i + 1] > data[i+2] :
+                data[i+1], data[i+2] = data[i+2], data[i+1]
+                flag = False
+            if data[i + 1] > data[i+3] :
+                data[i+1], data[i+3] = data[i+3], data[i+1]
+                flag = False
+            if data[i + 2] > data[i+3] :
+                data[i+2], data[i+3] = data[i+3], data[i+2]
+                flag = False
+        flag = not flag
+    return data, count
+
+def toPlot(data):
+    sortedData, base = algorithm(data)
+    bestData, best = algorithm(sortedData)
+    worseData, worse = algorithm(bestData[::-1])
+    return base, best, worse, sortedData
 
 def makeTestData(n):
     data = []
@@ -31,10 +46,6 @@ def makeTestData(n):
 
 if __name__ == '__main__':
     print("Main")
-    data = makeTestData(10)
-    print(data)
-    sortedData = algorithm(data)
-    print(sortedData)
-    #best = algorithm(sortedData)
-    #worse = algorithm(best[::-1])
+    data = makeTestData(100)
+    toPlot(data)
 

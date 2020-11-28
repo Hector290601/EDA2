@@ -4,11 +4,10 @@ Created on Fri Oct  9 09:25:22 2020
 
 @author: hrmha
 """
-
+from math import log
 from userClass import *
 from userClass import *
-from countingSort import *
-from radixSort import *
+from pythonCode import *
 from getUsersData import *
 import matplotlib.pyplot as plt
 
@@ -38,47 +37,37 @@ def transformToCountingSortType(data, args):
     return transformedData
 
 def main():
-    c = 100
+    c = 2100
     x = range(1, c)
-    yBstCs = []
-    yBseCs = []
-    yWseCs = []
-    yBstRs = []
-    yBseRs = []
-    yWseRs = []
+    yBstMo = []
+    yBseMo = []
+    yWseMo = []
+    xCuadratico = []
+    xLog = []
     userList = getData()
     data = transformData(userList)
     usersStack = addUserFromData(data, c)
-    sortableData = transformToCountingSortType(usersStack, 1)
+    sortableData = transformToCountingSortType(usersStack, 6)
     for i in x:
-        baseCaseCs, bestCaseCs, worseCaseCs = toPlotCs(sortableData[:i])
-        baseCaseRs, bestCaseRs, worseCaseRs = toPlotRs(sortableData[:i])
-        yBstCs.append(baseCaseCs)
-        yBseCs.append(bestCaseCs)
-        yWseCs.append(worseCaseCs)
-        yBstRs.append(baseCaseRs)
-        yBseRs.append(bestCaseRs)
-        yWseRs.append(worseCaseRs)
+        baseCaseMo, bestCaseMo, worseCaseMo = toPlot(sortableData[:i])
+        xCuadratico.append(i * i)
+        yBstMo.append(baseCaseMo)
+        yBseMo.append(bestCaseMo)
+        yWseMo.append(worseCaseMo)
     plt.subplot(331)
-    plt.ylabel('Counting sort')
+    plt.ylabel('My Own Algorithm')
     plt.xlabel('Caso Base')
-    plt.plot(x, yBstCs, 'r-')
-    plt.subplot(332)
+    plt.plot(x, yBstMo, 'r-')
+    plt.plot(x, x, 'm--')
+    plt.plot(x, xCuadratico, 'k--')
+    plt.subplot(335)
     plt.xlabel('Mejor Caso')
-    plt.plot(x, yBseCs, 'g-')
-    plt.subplot(333)
-    plt.xlabel('Peor Caso')
-    plt.plot(x, yWseCs, 'b-')
-    plt.subplot(337)
-    plt.xlabel('Caso Base')
-    plt.ylabel('Radix sort')
-    plt.plot(x, yBstRs, 'r-')
-    plt.subplot(338)
-    plt.xlabel('Mejor Caso')
-    plt.plot(x, yBseRs, 'g-')
+    plt.plot(x, yBseMo, 'g-')
     plt.subplot(339)
     plt.xlabel('Peor Caso')
-    plt.plot(x, yWseRs, 'b-')
+    plt.plot(x, yWseMo, 'b-')
+    plt.plot(x, x, 'm--')
+    plt.plot(x, xCuadratico, 'k--')
     plt.savefig('plot.png')
     plt.show()
 
