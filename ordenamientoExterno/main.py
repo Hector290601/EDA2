@@ -7,7 +7,7 @@ Created on Fri Oct  9 09:25:22 2020
 from math import log
 from userClass import *
 from userClass import *
-from pythonCode import *
+from extern import *
 from getUsersData import *
 import matplotlib.pyplot as plt
 
@@ -38,10 +38,10 @@ def transformToCountingSortType(data, args):
 
 def main():
     c = 2100
-    x = range(1, c)
-    yBstMo = []
-    yBseMo = []
-    yWseMo = []
+    x = range(100, c)
+    yBstMoEx = []
+    yBseMoEx = []
+    yWseMoEx = []
     xCuadratico = []
     xLog = []
     userList = getData()
@@ -49,23 +49,23 @@ def main():
     usersStack = addUserFromData(data, c)
     sortableData = transformToCountingSortType(usersStack, 6)
     for i in x:
-        baseCaseMo, bestCaseMo, worseCaseMo = toPlot(sortableData[:i])
+        baseCaseMoEx, bestCaseMoEx, worseCaseMoEx = toPlotExtern(sortableData[:i])
         xCuadratico.append(i * i)
-        yBstMo.append(baseCaseMo)
-        yBseMo.append(bestCaseMo)
-        yWseMo.append(worseCaseMo)
+        yBstMoEx.append(baseCaseMoEx)
+        yBseMoEx.append(bestCaseMoEx)
+        yWseMoEx.append(worseCaseMoEx)
     plt.subplot(331)
-    plt.ylabel('My Own Algorithm')
+    plt.ylabel('ExternSort')
     plt.xlabel('Caso Base')
-    plt.plot(x, yBstMo, 'r-')
+    plt.plot(x, yBstMoEx, 'r-')
     plt.plot(x, x, 'm--')
     plt.plot(x, xCuadratico, 'k--')
     plt.subplot(335)
     plt.xlabel('Mejor Caso')
-    plt.plot(x, yBseMo, 'g-')
+    plt.plot(x, yBseMoEx, 'g-')
     plt.subplot(339)
     plt.xlabel('Peor Caso')
-    plt.plot(x, yWseMo, 'b-')
+    plt.plot(x, yWseMoEx, 'b-')
     plt.plot(x, x, 'm--')
     plt.plot(x, xCuadratico, 'k--')
     plt.savefig('plot.png')
