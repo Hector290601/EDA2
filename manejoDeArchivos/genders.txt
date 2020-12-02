@@ -1,2 +1,2 @@
-'Male': 1278
-'Female': 1322
+'Male': 641
+'Female': 658

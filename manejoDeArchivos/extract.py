@@ -1,5 +1,7 @@
 import matplotlib.pyplot as plt
 
+cont = 0
+
 def cleanData(data):
     data = data.replace(data[-1], '')
     moreThan = data.find('>')
@@ -8,6 +10,8 @@ def cleanData(data):
     return data
 
 def addToDicc(dicc, data):
+    global cont
+    cont += 1
     if data in dicc:
         dicc[data] += 1
     else:
@@ -59,48 +63,55 @@ def writeToFile(dicc, string):
         return False
 
 def extractUserData():
-    names = {}
-    emails = {}
-    passwords = {}
-    concurrencies = {}
-    genders = {}
-    shirtSizes = {}
-    try:
-        file = open('dataset.xml', 'r')
-    except:
-        return
-    line = 'algo'
-    i = 0
-    while line != '':
-        if line == '  <record>':
-            name = file.readline()
-            email = file.readline()
-            password = file.readline()
-            concurrency = file.readline()
-            gender = file.readline()
-            shirtSize = file.readline()
-            name = cleanData(name)
-            names = addToDicc(names, name)
-            email = cleanData(email)
-            at = email.find('@')
-            dot = email.find('.')
-            email = email[at+1:dot]
-            emails = addToDicc(emails, email)
-            password = cleanData(password)
-            passwords = addToDicc(passwords, password)
-            concurrency = cleanData(concurrency)
-            concurrencies = addToDicc(concurrencies, concurrency)
-            gender = cleanData(gender)
-            genders = addToDicc(genders, gender)
-            shirtSize = cleanData(shirtSize)
-            shirtSizes = addToDicc(shirtSizes, shirtSize)
+    global cont
+    x = range(0, 2600)
+    y = []
+    for i in x:
+        names = {}
+        emails = {}
+        passwords = {}
+        concurrencies = {}
+        genders = {}
+        shirtSizes = {}
         try:
-            line = file.readline()
-            line = line.replace(line[-1], '')
+            file = open('dataset.xml', 'r')
         except:
-            break
-    if file:
-        file.close()
+            return
+        line = 'algo'
+        j = 0
+        while line != '' and j <= i:
+            j += 1
+            if line == '  <record>':
+                name = file.readline()
+                email = file.readline()
+                password = file.readline()
+                concurrency = file.readline()
+                gender = file.readline()
+                shirtSize = file.readline()
+                name = cleanData(name)
+                names = addToDicc(names, name)
+                email = cleanData(email)
+                at = email.find('@')
+                dot = email.find('.')
+                email = email[at+1:dot]
+                emails = addToDicc(emails, email)
+                password = cleanData(password)
+                passwords = addToDicc(passwords, password)
+                concurrency = cleanData(concurrency)
+                concurrencies = addToDicc(concurrencies, concurrency)
+                gender = cleanData(gender)
+                genders = addToDicc(genders, gender)
+                shirtSize = cleanData(shirtSize)
+                shirtSizes = addToDicc(shirtSizes, shirtSize)
+            try:
+                line = file.readline()
+                line = line.replace(line[-1], '')
+            except:
+                break
+        if file:
+            file.close()
+        y.append(cont)
+        cont = 0
     plotData(names, 'Most Frequent Names')
     plotData(emails, 'Most Frequent Emails')
     plotData(passwords, 'Most Frequent Passwords')
@@ -131,6 +142,9 @@ def extractUserData():
         print('ShirtSizes has beenn writed succesfully')
     else:
         print('An unexpected error has ocurred')
+    print(cont)
+    plt.plot(x, y)
+    plt.show()
 
 if __name__ == '__main__':
     extractUserData()
