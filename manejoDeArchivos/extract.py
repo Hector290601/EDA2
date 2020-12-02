@@ -23,7 +23,10 @@ def extractUserData():
     concurrencies = {}
     genders = {}
     shirtSizes = {}
-    file = open('dataset.xml', 'r')
+    try:
+        file = open('dataset.xml', 'r')
+    except:
+        return
     line = 'algo'
     i = 0
     while line != '':
