@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 def cleanData(data):
     data = data.replace(data[-1], '')
     moreThan = data.find('>')
@@ -15,6 +17,30 @@ def addToDicc(dicc, data):
 def getMaxConcurrency(dicc):
     maxConc = max(dicc, key = dicc.get)
     return maxConc
+
+def personalizeDatasToPlot(dicc):
+    dataDicc = list(dicc.values())
+    aliasDicc = list(dicc.keys())
+    dataToPlot = []
+    aliasToPlot = []
+    k = 0
+    for i in range(len(dataDicc)):
+        if dataDicc[i] > 3:
+            dataToPlot.append(dataDicc[i])
+            aliasToPlot.append(aliasDicc[i])
+        else:
+            k += 1
+    dataToPlot.append(k)
+    aliasToPlot.append('oters')
+    return dataToPlot, aliasToPlot
+
+def plotData(dicc, windowName):
+    moreFrequentlyDicc = getMaxConcurrency(dicc)
+    fig, ax = plt.subplots()
+    dataDicc, aliasDicc = personalizeDatasToPlot(dicc)
+    g = ax.pie(dataDicc, labels = aliasDicc, labeldistance = 1, shadow = True, autopct = '%1.1f%%', pctdistance = 0.9)
+    fig.canvas.set_window_title(windowName)
+    plt.show()
 
 def extractUserData():
     names = {}
@@ -59,18 +85,12 @@ def extractUserData():
             break
     if file:
         file.close()
-    moreFrequentlyName = getMaxConcurrency(names)
-    moreFrequentlyEmail = getMaxConcurrency(emails)
-    moreFrequentlyPassword = getMaxConcurrency(passwords)
-    moreFrequentlyConcurrencies = getMaxConcurrency(concurrencies)
-    moreFrequentlyGender = getMaxConcurrency(genders)
-    moreFrequentlyShirtSize = getMaxConcurrency(shirtSizes)
-    print(moreFrequentlyName, ':', names.get(moreFrequentlyName))
-    print(moreFrequentlyEmail, ':', emails.get(moreFrequentlyEmail))
-    print(moreFrequentlyPassword, ':', passwords.get(moreFrequentlyPassword))
-    print(moreFrequentlyConcurrencies, ':', concurrencies.get(moreFrequentlyConcurrencies))
-    print(moreFrequentlyGender, ':', genders.get(moreFrequentlyGender))
-    print(moreFrequentlyShirtSize, ':', shirtSizes.get(moreFrequentlyShirtSize))
+    plotData(names, 'Most Frequent Names')
+    plotData(emails, 'Most Frequent Emails')
+    plotData(passwords, 'Most Frequent Passwords')
+    plotData(concurrencies, 'Most Frequent Coins type')
+    plotData(genders, 'Most Frequent Genders')
+    plotData(shirtSizes, 'Most Frequent ShirtSizes')
 
 if __name__ == '__main__':
     extractUserData()
