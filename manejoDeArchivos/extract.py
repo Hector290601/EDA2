@@ -144,6 +144,7 @@ def extractUserData():
         print('An unexpected error has ocurred')
     print(cont)
     plt.plot(x, y)
+    plt.savefig('time.png')
     plt.show()
 
 if __name__ == '__main__':
