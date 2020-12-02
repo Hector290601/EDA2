@@ -42,6 +42,22 @@ def plotData(dicc, windowName):
     fig.canvas.set_window_title(windowName)
     plt.show()
 
+def formatDicc(dicc):
+    diccStr = str(dicc)
+    diccStr = diccStr[1:-1]
+    diccStr = diccStr.replace(', ', '\n')
+    diccStr += '\n'
+    return diccStr
+
+def writeToFile(dicc, string):
+    try:
+        fileDicc = open(string + '.txt', 'w+')
+        fileDicc.write(formatDicc(dicc))
+        fileDicc.close()
+        return True
+    except:
+        return False
+
 def extractUserData():
     names = {}
     emails = {}
@@ -91,6 +107,30 @@ def extractUserData():
     plotData(concurrencies, 'Most Frequent Coins type')
     plotData(genders, 'Most Frequent Genders')
     plotData(shirtSizes, 'Most Frequent ShirtSizes')
+    if writeToFile(names, 'names'):
+        print('Names has beenn writed succesfully')
+    else:
+        print('An unexpected error has ocurred')
+    if writeToFile(emails, 'emails'):
+        print('Emails has beenn writed succesfully')
+    else:
+        print('An unexpected error has ocurred')
+    if writeToFile(passwords, 'passwords'):
+        print('Passwords has beenn writed succesfully')
+    else:
+        print('An unexpected error has ocurred')
+    if writeToFile(concurrencies, 'concurrencies'):
+        print('Concurrencies has beenn writed succesfully')
+    else:
+        print('An unexpected error has ocurred')
+    if writeToFile(genders, 'genders'):
+        print('Genders has beenn writed succesfully')
+    else:
+        print('An unexpected error has ocurred')
+    if writeToFile(shirtSizes, 'shirtSizes'):
+        print('ShirtSizes has beenn writed succesfully')
+    else:
+        print('An unexpected error has ocurred')
 
 if __name__ == '__main__':
     extractUserData()
