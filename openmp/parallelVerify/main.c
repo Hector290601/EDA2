@@ -16,4 +16,5 @@ int main(){
 		printf("Hilo actual: %d\n", id);
 		printf("En paralelo: %d\n", omp_in_parallel());
 	}
+	return 0;
 }
