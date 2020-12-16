@@ -1,3 +1,5 @@
+import random
+
 class Node:
     to = 0
     cost = 0
@@ -36,9 +38,20 @@ def createGraph(graph, cost, data = None):
             if cost == True:
                 cost = input('Cost: ')
             else:
-                costTmp = 1
-            insertEdge(graph, u, v, costTmp, graph.directed)
+                cost = 1
+            insertEdge(graph, u, v, cost, graph.directed)
             i += 1
+    else:
+        while i < graph.numEdges:
+            u = data[random.randint(0, len(data) - 1)]
+            v = data[random.randint(0, len(data) - 1)]
+            if cost == True:
+                cost = random.randint(0, 10)
+            else:
+                cost = 1
+            insertEdge(graph, u, v, cost, graph.directed)
+            i += 1
+
 
 def printGraph(graph):
     i = 1
@@ -48,13 +61,13 @@ def printGraph(graph):
         string += str(i) + "\t"
         item = graph.edges[i]
         while item != None:
-            string += str(item.to) + ":" + str(item.cost) + "\t"
+            string += str(item.to) + "$" + str(item.cost) + "\t"
             item = item.nxt
         string += "\n"
         i += 1
     print(string)
 
-def main():
+def test():
     directed = int(input("Es dirigida? 1)Sí, 2)No: "))
     cost = int(input("¿Peso en las aristas? 1)Sí, 2)No: "))
     graph.numNodes = int(input("Número de nodos: "))
@@ -65,8 +78,20 @@ def main():
     createGraph(graph, cost)
     printGraph(graph)
 
+def fromCsvFile(data):
+    dataSize = len(data)
+    graph.numNodes = dataSize
+    graph.directed = bool(random.getrandbits(1))
+    graph.numEdges = random.randint(0, dataSize)
+    cost = bool(random.getrandbits(1))
+    startGraph(graph)
+    createGraph(graph, cost, data)
+    #printGraph(graph)
+    return graph
+
 graph = Graph()
 
 if __name__ == '__main__':
-    main()
+    #test()
+    fromCsvFile([1, 2, 3])
 

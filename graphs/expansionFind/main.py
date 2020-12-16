@@ -6,11 +6,10 @@ Created on Fri Oct  9 09:25:22 2020
 """
 
 from userClass import *
-from userClass import *
-from binaryFind import *
-from linealFind import *
+from graph import *
 from getUsersData import *
 import matplotlib.pyplot as plt
+import os
 
 def getData():
     data = usersListFromCsv()
@@ -38,51 +37,19 @@ def transformToCountingSortType(data, args):
     return transformedData
 
 def main():
-    c = 100
+    c = 20
     x = range(1, c)
-    yBaBiItQs = []
-    yBsBiItQs = []
-    yWsBiItQs = []
-    yBaBiRvQs = []
-    yBsBiRvQs = []
-    yWsBiRvQs = []
-    yBaBiItBs = []
-    yBsBiItBs = []
-    yWsBiItBs = []
-    yBaBiRvBs = []
-    yBsBiRvBs = []
-    yWsBiRvBs = []
-    yBaLiIt = []
-    yBsLiIt = []
-    yWsLiIt = []
-    yBaLiRv = []
-    yBsLiRv = []
-    yWsLiRv = []
+    y = []
     userList = getData()
     data = transformData(userList)
     usersStack = addUserFromData(data, c)
     sortableData = transformToCountingSortType(usersStack, 1)
     for i in x:
-        BaBiItQs, BsBiItQs, WsBiItQs, BaBiRvQs, BsBiRvQs, WsBiRvQs, BaBiItBs, BsBiItBs, WsBiItBs, BaBiRvBs, BsBiRvBs, WsBiRvBs = toPlotBf(sortableData[:i])
-        BaLiIt, BsLiIt, WsLiIt, BaLiRv, BsLiRv, WsLiRv = toPlotLf(sortableData[:i])
-        yBaBiItQs.append(BaBiItQs)
-        yBsBiItQs.append(BsBiItQs)
-        yWsBiItQs.append(WsBiItQs)
-        yBaBiRvQs.append(BaBiRvQs)
-        yBsBiRvQs.append(BsBiRvQs)
-        yWsBiRvQs.append(WsBiRvQs)
-        yBaBiItBs.append(BaBiItBs)
-        yBsBiItBs.append(BsBiItBs)
-        yWsBiItBs.append(WsBiItBs)
-        yBaBiRvBs.append(BaBiRvBs)
-        yBsBiRvBs.append(BsBiRvBs)
-        yWsBiRvBs.append(WsBiRvBs)
-        yBaLiIt.append(BaLiIt)
-        yBsLiIt.append(BsLiIt)
-        yWsLiIt.append(WsLiIt)
-        yBaLiRv.append(BaLiRv)
-        yBsLiRv.append(BsLiRv)
-        yWsLiRv.append(WsLiRv)
+        graph = fromCsvFile(sortableData)
+    printGraph(graph)
+    print(graph)
+    """
+        y.append(BaBiItQs)
     plt.figure(1)
     plt.suptitle('Busqueda Binaria MergeSort')
     plt.subplot(331)
@@ -153,6 +120,8 @@ def main():
     plt.plot(x, yWsLiRv, 'r.')
     plt.savefig('plot3.png')
     plt.show()
+    """
+
 
 if __name__ == '__main__':
     main()
