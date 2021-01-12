@@ -42,14 +42,15 @@ def createGraph(graph, cost, data = None):
             insertEdge(graph, u, v, cost, graph.directed)
             i += 1
     else:
+        print(cost)
         while i < graph.numEdges:
             u = data[random.randint(0, len(data) - 1)]
             v = data[random.randint(0, len(data) - 1)]
             if cost == True:
-                cost = random.randint(0, 10)
+                costo = random.randint(0, 10)
             else:
-                cost = 1
-            insertEdge(graph, u, v, cost, graph.directed)
+                costo = 1
+            insertEdge(graph, u, v, costo, graph.directed)
             i += 1
 
 
@@ -78,20 +79,19 @@ def test():
     createGraph(graph, cost)
     printGraph(graph)
 
-def fromCsvFile(data):
+def fromCsvFile(data, directed, numEdges, cost):
     dataSize = len(data)
     graph.numNodes = dataSize
-    graph.directed = bool(random.getrandbits(1))
-    graph.numEdges = random.randint(0, dataSize)
-    cost = bool(random.getrandbits(1))
+    graph.directed = directed
+    graph.numEdges = numEdges
+    cost = cost
     startGraph(graph)
     createGraph(graph, cost, data)
-    #printGraph(graph)
     return graph
 
 graph = Graph()
 
 if __name__ == '__main__':
     #test()
-    fromCsvFile([1, 2, 3])
+    fromCsvFile([1, 2, 3], False, 3, 1)
 
