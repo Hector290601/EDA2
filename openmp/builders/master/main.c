@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <omp.h>
 #include <unistd.h>
-#define NUM_THREADS 256
+#define NUM_THREADS 12
 
 int main(){
   omp_set_num_threads(NUM_THREADS);
