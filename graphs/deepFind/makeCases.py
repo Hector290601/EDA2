@@ -1,5 +1,5 @@
 from graph import *
-from expansionFind import *
+from deepFind import *
 
 def bestCaseTime(data):
     size = len(data)
@@ -7,8 +7,7 @@ def bestCaseTime(data):
     numEdges = size
     cost = 1
     grafo = fromCsvFile(data, directed, 0, cost)
-    root = 1
-    iterations = expansionFind(grafo, root)
+    iterations = deepFind(grafo, 1)
     return iterations
 
 def baseCaseTime(data):
@@ -18,7 +17,7 @@ def baseCaseTime(data):
     cost = 1
     grafo = fromCsvFile(data, directed, numEdges, cost)
     root = 1
-    iterations = expansionFind(grafo, root)
+    iterations = deepFind(grafo, 1)
     return iterations
 
 def worseCaseTime(data):
@@ -28,7 +27,7 @@ def worseCaseTime(data):
     cost = 1
     grafo = fromCsvFile(data, directed, size, cost, True)
     root = 1
-    iterations = expansionFind(grafo, root)
+    iterations = deepFind(grafo, 1)
     return iterations
 
 if __name__ == '__main__':
