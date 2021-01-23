@@ -38,7 +38,7 @@ def transformToCountingSortType(data, args):
     return transformedData
 
 def main():
-    c = 1000
+    c = 10
     x = range(1, c)
     yBase = []
     yBest = []

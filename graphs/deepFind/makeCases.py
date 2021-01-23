@@ -16,6 +16,7 @@ def baseCaseTime(data):
     numEdges = random.randint(0, size)
     cost = 1
     grafo = fromCsvFile(data, directed, numEdges, cost)
+    printGraph(grafo)
     root = 1
     iterations = deepFind(grafo, 1)
     return iterations
