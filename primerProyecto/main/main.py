@@ -11,6 +11,7 @@ class Window(QMainWindow):
     dirs = []
     sizes = []
     mods = []
+    files = [[], []]
     currentPat = ""
     flagSorted = False
     def __init__(self):
@@ -32,6 +33,7 @@ class Window(QMainWindow):
         menuFile.addAction(menuNewFile)
         #Eventos:
         #   backButton          QPushButton
+        self.backButton.clicked.connect(self.returnPath)
         #   homeButton          QPushButton
         self.homeButton.clicked.connect(self.goToHome)
         #   sortButton          QPushButton
@@ -42,8 +44,28 @@ class Window(QMainWindow):
         #   lcdFilesCounter     QLCDNumber
         #   lcddirsCounter      QLCDNumber
         #   pathToSearch        QLineEdit
+        self.pathToSearch.textChanged.connect(self.find)
         #   searchButton        QPushButton
         self.searchButton.clicked.connect(self.find)
+    
+    def returnPath(self):
+        self.treeWidgetView.clear()
+        pathDir = self.absolutePath.text()
+        pathDir = pathDir[::-1]
+        pathDir = pathDir[pathDir.find(os.path.sep) + 1:]
+        pathDir = pathDir[::-1]
+        dirs = []
+        sizes = []
+        mods = []
+        archivos = 0
+        carpetas = 0
+        if pathDir != "":
+            pathDir = self.getRootPath()
+            self.absolutePath.setText(pathDir)
+        self.currentPat = pathDir
+        self.getAbsoulePath()
+        if self.flagSorted:
+            self.sort()
 
     def find(self):
         nameToFind = self.pathToSearch.text()
@@ -51,16 +73,14 @@ class Window(QMainWindow):
             number = self.binaryFind(self.dirs, nameToFind)
         else:
             number = self.linealfind(self.dirs, nameToFind)
-        if number == -1:
-            pass
-        else:
+        if number != -1:
             self.treeWidgetView.setCurrentItem(self.treeWidgetView.topLevelItem(number))
 
     def linealfind(self, data, target):
         finded = False
         for i in range(len(data)):
             if not finded:
-                if data[i] == target:
+                if (data[i]).startswith(target):
                     finded = True
                     return i
             else:
@@ -74,7 +94,7 @@ class Window(QMainWindow):
         while start <= end and not finded:
             middle = (start + end) // 2
             if middle < len(data):
-                if data[middle] == target:
+                if (data[middle]).startswith(target):
                     finded = True
                     break
                 else:
@@ -242,7 +262,7 @@ class Window(QMainWindow):
         #obtener el item
         item = self.treeWidgetView.currentItem()
         #crear la ruta accediendo al nombre del elemento
-        elemento = self.absolutePath.text() + os.path.sep + item.text(0)
+        elemento = self.absolutePath.text() + item.text(0)
         #comprobar si es un directorio, navegar en él
         if os.path.isdir(elemento):
             self.absolutePath.setText(elemento)
