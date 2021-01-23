@@ -39,29 +39,36 @@ class Window(QMainWindow):
         #   sortButton          QPushButton
         self.sortButton.clicked.connect(self.sortOrNot)
         #   absolutePath        QLineEdit
+        self.absolutePath.textChanged.connect(self.deleteSep)
         #   treeWidgetView      QTreeWidget
         self.treeWidgetView.itemDoubleClicked.connect(self.openElement)
-        #   lcdFilesCounter     QLCDNumber
-        #   lcddirsCounter      QLCDNumber
         #   pathToSearch        QLineEdit
         self.pathToSearch.textChanged.connect(self.find)
         #   searchButton        QPushButton
         self.searchButton.clicked.connect(self.find)
-    
+
+    def deleteSep(self):
+        text = self.absolutePath.text()
+        if text.endswith(os.path.sep):
+            text = text[:-1]
+        self.absolutePath.setText(text)
+
     def returnPath(self):
         self.treeWidgetView.clear()
         pathDir = self.absolutePath.text()
         pathDir = pathDir[::-1]
-        pathDir = pathDir[pathDir.find(os.path.sep) + 1:]
+        pathDir = pathDir[pathDir.find(os.path.sep):]
         pathDir = pathDir[::-1]
+        if pathDir.endswith(os.path.sep):
+            pathDir = pathDir[:-1]
         dirs = []
         sizes = []
         mods = []
         archivos = 0
         carpetas = 0
-        if pathDir != "":
+        if pathDir == "":
             pathDir = self.getRootPath()
-            self.absolutePath.setText(pathDir)
+        self.absolutePath.setText(pathDir)
         self.currentPat = pathDir
         self.getAbsoulePath()
         if self.flagSorted:
@@ -262,7 +269,10 @@ class Window(QMainWindow):
         #obtener el item
         item = self.treeWidgetView.currentItem()
         #crear la ruta accediendo al nombre del elemento
-        elemento = self.absolutePath.text() + item.text(0)
+        pth = self.absolutePath.text()
+        if pth.endswith(os.path.sep):
+            pth = pth[:-1]
+        elemento = self.absolutePath.text() + os.path.sep + item.text(0)
         #comprobar si es un directorio, navegar en él
         if os.path.isdir(elemento):
             self.absolutePath.setText(elemento)
