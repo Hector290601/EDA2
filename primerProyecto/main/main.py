@@ -43,34 +43,52 @@ class Window(QMainWindow):
         #   lcddirsCounter      QLCDNumber
         #   pathToSearch        QLineEdit
         #   searchButton        QPushButton
+        self.searchButton.clicked.connect(self.find)
 
     def find(self):
+        nameToFind = self.pathToSearch.text()
         if self.flagSorted:
+            number = self.binaryFind(self.dirs, nameToFind)
+        else:
+            number = self.linealfind(self.dirs, nameToFind)
+        if number == -1:
+            pass
+        else:
+            self.treeWidgetView.setCurrentItem(self.treeWidgetView.topLevelItem(number))
 
+    def linealfind(self, data, target):
+        finded = False
+        for i in range(len(data)):
+            if not finded:
+                if data[i] == target:
+                    finded = True
+                    return i
+            else:
+                break
+        return -1
 
-    def iterativeBinaryFind(data, target):
-    complexCount = 0
-    start = 0
-    end = len(data)
-    finded = False
-    while start <= end and not finded:      # 6log_2(n), 3 entradas a memoria y 3 comparaciones, el logaritm
-        middle = (start + end) // 2         #   4, creación de variable, asignación de valor y dos accesos a memoria log_2(n)
-        complexCount += 1                   #   2, un acceso a memoria y una asignación a esta log_2(n)
-        if middle < len(data):              #   4, dos accesos a memoria, una operación básica y una comparación log_2(n)
-            if data[middle] == target:      #       5, 3 accesos a memoria, un acceso a memoria en un lugar específico del arreglo y una comparación log_2(n)
-                finded = True               #           2, un acceso a memoria y un cambio de valor log_2(n)
-                break                       #           1, operación básica log_2(n)
-            else:                           #       0 log_2(n)
-                if target < data[middle]:   #           5, 3 accesos a memoria, un acceso a memoria en un lugar específico del arreglo y una comparación log_2(n)
-                    end = middle - 1        #               4, dos accesos a memoria, una asignación de valor y una operación básica log_2(n)
-                else:                       #           0 log_2(n)
-                    start = middle + 1      #               4, dos accesos a memoria, una asignación de valor y una operación básica log_2(n)
-        else:                               #   0 log_2(n)
-            break                           #       1, operación básica log_2(n)
-    if finded:                              # 1,acceso a memoria
-        return middle, complexCount         #   3, dos accesos a memoria y una operación básica
-    else:                                   # 0
-        return -1, complexCount
+    def binaryFind(self, data, target):
+        start = 0
+        end = len(data)
+        finded = False
+        while start <= end and not finded:
+            middle = (start + end) // 2
+            if middle < len(data):
+                if data[middle] == target:
+                    finded = True
+                    break
+                else:
+                    if target < data[middle]:
+                        end = middle - 1
+                    else:
+                        start = middle + 1
+            else:
+                break
+        if finded:
+            return middle
+        else:
+            return -1
+
     def sortOrNot(self):
         if self.flagSorted:
             self.getAbsoulePath()
