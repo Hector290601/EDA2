@@ -1,25 +1,47 @@
 from pathlib import Path 
 import sys, os, time
-from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QMessageBox, QTreeWidgetItem, QDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QAction, QMessageBox, QTreeWidgetItem, QDialog, QTreeView
+from PyQt5.Qt import QStandardItemModel, QStandardItem
+from PyQt5 import QtWidgets
+from PyQt5.QtGui import QFont, QColor
 from PyQt5 import uic
+import PyQt5.QtGui
 from os import scandir, getcwd, walk, listdir, path, stat
 from PyQt5.QtGui import QIcon
 import subprocess
 from mimetypes import MimeTypes
 
+class File():
+    name = ""
+    dad = ""
+    size = ""
+    lastMod = ""
+
+class Dir():
+    name = ""
+    dad  =""
+    lastMod = ""
+    sons = [None]
+    QPos = None
+
 class Window(QMainWindow):
     dirs = []
     sizes = []
     mods = []
-    files = [[], []]
     currentPat = ""
+    currentPatL = ""
+    files = [[], []]
     flagSorted = False
+    archivos = 0
+    carpetas = 0
     def __init__(self):
         QMainWindow.__init__(self)
         uic.loadUi("main.ui", self)
         #crear barra de estado
         self.statusBar().showMessage("Welcome, made by Hector290601 on github")
         self.goToHome()
+        self.showLeft(self.getRootPath)
+        self.currentPatL = self.getAbsoulePath
         #crear objeto de la clase menuBar
         menu = self.menuBar()
         #menu padre
@@ -46,7 +68,85 @@ class Window(QMainWindow):
         self.pathToSearch.textChanged.connect(self.find)
         #   searchButton        QPushButton
         self.searchButton.clicked.connect(self.find)
+    
+    def showLeft(self, directorio):
+        tw = self.leftView
+        cts = []
+        temp = []
+        cg = QtWidgets.QTreeWidgetItem(tw, ["America"])
+        c1 = QtWidgets.QTreeWidgetItem(cg, ["Mexico"])
+        path = self.getRootPath()
+        treeData = self.fillTree(path)
+        tw.clear()
+        cnt = 0
+        for i in treeData:
+            for k in i:
+                k.QPos = QtWidgets.QTreeWidgetItem(tw, [k.name])
+                kType = type(k)
+                if kType is Dir:
+                    newPath = path + os.path.sep + k.name
+                    tmp = self.fillTree(newPath)
+                    for j in tmp:
+                        for l in j:
+                            k.sons.append(None)
+                            k.sons[-1] = QtWidgets.QTreeWidgetItem(k.QPos, [l.name])
+    
+    def fillTree(self, pth):
+        dirs = []
+        files = []
+        rows = []
+        if path.isdir(pth):
+            for name in os.listdir(pth):
+                pthInfo = pth + os.path.sep + name
+                info = os.stat(pthInfo)
+                if os.path.isdir(name):
+                    current = Dir()
+                    current.dad = path
+                    current.lastMod = str(time.ctime(info.st_mtime))
+                    current.name = name 
+                    dirs.append(current)
+                else:
+                    current = File()
+                    current.dad = path
+                    current.name = name
+                    current.lastMod = str(time.ctime(info.st_mtime))
+                    files.append(current)
+        rows.append(dirs)
+        rows.append(files)
+        return rows
 
+    
+    def makeTree(self, file):
+        pathDir, dirs, rec, sizes, mods = ""
+        if file.isdir():
+            for element in listdir(pathDir):
+                name = element
+                dirs.append(name)
+                pathInfo = pathDir + os.path.sep + name
+                informacion = stat(pathInfo)
+                if path.isdir(pathInfo):
+                    type = "Carpeta de archivos"
+                    size = ""
+                    self.carpetas += 1
+                    self.files[0].append(name)
+                elif rec:
+                    mime = MimeTypes()
+                    type = mime.guess_type(pathInfo)[0]
+                    size = str(informacion.st_size) + "B"
+                    self.archivos += 1
+                    self.files[1].append(name)
+                else:
+                    mime = MimeTypes()
+                    type = mime.guess_type(pathInfo)[0]
+                    size = str(informacion.st_size) + "B"
+                    self.archivos += 1
+                sizes.append(size)
+                date = str(time.ctime(informacion.st_mtime))
+                mods.append(date)
+                row = [name, date, type, size]
+                self.treeWidgetView.insertTopLevelItems(0, [QTreeWidgetItem(self.treeWidgetView, row)])
+
+    
     def deleteSep(self):
         text = self.absolutePath.text()
         if text.endswith(os.path.sep):
@@ -61,11 +161,6 @@ class Window(QMainWindow):
         pathDir = pathDir[::-1]
         if pathDir.endswith(os.path.sep):
             pathDir = pathDir[:-1]
-        dirs = []
-        sizes = []
-        mods = []
-        archivos = 0
-        carpetas = 0
         if pathDir == "":
             pathDir = self.getRootPath()
         self.absolutePath.setText(pathDir)
@@ -123,29 +218,46 @@ class Window(QMainWindow):
             self.sort()
         self.flagSorted = not self.flagSorted
 
-    def sort(self):
-        self.treeWidgetView.clear()
-        dirsData = self.quickSort(self.dirs, 0, len(self.dirs)-1)
-        pathDir = self.absolutePath.text()
-        self.dirs = []
-        for element in dirsData:
+    def walkOnDirsData(self, dirsData, pathDir, rec = False):
+        dirs = []
+        sizes = []
+        mods = []
+        self.archivos = 0
+        self.carpetas = 0
+        for element in listdir(pathDir):
             name = element
-            self.dirs.append(name)
+            dirs.append(name)
             pathInfo = pathDir + os.path.sep + name
             informacion = stat(pathInfo)
             if path.isdir(pathInfo):
                 type = "Carpeta de archivos"
                 size = ""
+                self.carpetas += 1
+                self.files[0].append(name)
+            elif rec:
+                mime = MimeTypes()
+                type = mime.guess_type(pathInfo)[0]
+                size = str(informacion.st_size) + "B"
+                self.archivos += 1
+                self.files[1].append(name)
             else:
                 mime = MimeTypes()
                 type = mime.guess_type(pathInfo)[0]
                 size = str(informacion.st_size) + "B"
-            #Fecha de modificación del archivo o carpeta
+                self.archivos += 1
+            sizes.append(size)
             date = str(time.ctime(informacion.st_mtime))
-            #crear un arreglo para almacenar items
+            mods.append(date)
             row = [name, date, type, size]
-            #insertar la fila
             self.treeWidgetView.insertTopLevelItems(0, [QTreeWidgetItem(self.treeWidgetView, row)])
+
+    
+    def sort(self):
+        self.treeWidgetView.clear()
+        dirsData = self.quickSort(self.dirs, 0, len(self.dirs)-1)
+        pathDir = self.absolutePath.text()
+        self.dirs = []
+        self.walkOnDirsData(dirsData, pathDir)
 
     def dividir(self, data, l, h):
         index = (l - 1) #4
@@ -174,6 +286,8 @@ class Window(QMainWindow):
         name = dialogo.name
         file = None
         file = open((self.currentPat + os.path.sep + name), "w+")
+        if file == None:
+            print("Error")
         self.getAbsoulePath()
 
     def getRootPath(self):
@@ -185,99 +299,38 @@ class Window(QMainWindow):
         rootPath = currentPath[:rootNumber]
         return rootPath
 
-    def goToHome(self):
+    def goToHome(self, rec = False):
         self.treeWidgetView.clear()
         pathDir = self.getRootPath()
         self.absolutePath.setText(pathDir)
         self.currentPat = pathDir
-        dirs = []
-        sizes = []
-        mods = []
-        archivos = 0
-        carpetas = 0
         if path.isdir(pathDir):
-            for element in listdir(pathDir):
-                name = element
-                dirs.append(name)
-                pathInfo = pathDir + os.path.sep + name
-                informacion = stat(pathInfo)
-                if path.isdir(pathInfo):
-                    type = "Carpeta de archivos"
-                    size = ""
-                    carpetas += 1
-                else:
-                    mime = MimeTypes()
-                    type = mime.guess_type(pathInfo)[0]
-                    size = str(informacion.st_size) + "B"
-                    archivos += 1
-                sizes.append(size)
-                #Fecha de modificación del archivo o carpeta
-                date = str(time.ctime(informacion.st_mtime))
-                mods.append(date)
-                #crear un arreglo para almacenar items
-                row = [name, date, type, size]
-                #insertar la fila
-                self.treeWidgetView.insertTopLevelItems(0, [QTreeWidgetItem(self.treeWidgetView, row)])
-            self.dirs = dirs
-            self.sizes = sizes
-            self.mods = mods
-        self.lcdFilesCounter.display(archivos)
-        self.lcdDirsCounter.display(carpetas)
+            self.walkOnDirsData(listdir(pathDir), pathDir)
+        self.lcdFilesCounter.display(self.archivos)
+        self.lcdDirsCounter.display(self.carpetas)
 
     def getAbsoulePath(self):
         self.treeWidgetView.clear()
         pathDir = self.absolutePath.text()
-        dirs = []
-        sizes = []
-        mods = []
-        archivos = 0
-        carpetas = 0
         if pathDir == "":
             pathDir = self.getRootPath()
             self.absolutePath.setText(pathDir)
         self.currentPat = pathDir
         if path.isdir(pathDir):
-            for element in listdir(pathDir):
-                name = element
-                dirs.append(name)
-                pathInfo = pathDir + os.path.sep + name
-                informacion = stat(pathInfo)
-                if path.isdir(pathInfo):
-                    type = "Carpeta de archivos"
-                    size = ""
-                    carpetas += 1
-                else:
-                    mime = MimeTypes()
-                    type = mime.guess_type(pathInfo)[0]
-                    size = str(informacion.st_size) + "B"
-                    archivos += 1
-                sizes.append(size)
-                #Fecha de modificación del archivo o carpeta
-                date = str(time.ctime(informacion.st_mtime))
-                mods.append(date)
-                #crear un arreglo para almacenar items
-                row = [name, date, type, size]
-                #insertar la fila
-                self.treeWidgetView.insertTopLevelItems(0, [QTreeWidgetItem(self.treeWidgetView, row)])
-            self.dirs = dirs
-            self.sizes = sizes
-            self.dirs = dirs
-        self.lcdFilesCounter.display(archivos)
-        self.lcdDirsCounter.display(carpetas)
+            self.walkOnDirsData(listdir(pathDir), pathDir)
+        self.lcdFilesCounter.display(self.archivos)
+        self.lcdDirsCounter.display(self.carpetas)
 
     def openElement(self):
-        #obtener el item
         item = self.treeWidgetView.currentItem()
-        #crear la ruta accediendo al nombre del elemento
         pth = self.absolutePath.text()
         if pth.endswith(os.path.sep):
             pth = pth[:-1]
         elemento = self.absolutePath.text() + os.path.sep + item.text(0)
-        #comprobar si es un directorio, navegar en él
         if os.path.isdir(elemento):
             self.absolutePath.setText(elemento)
             self.getAbsoulePath()
-        else:   #abrirlo con el programa por defecto
+        else:
             if sys.platform == "win32":
                 os.startfile(elemento)
             else:
@@ -285,7 +338,7 @@ class Window(QMainWindow):
                 subprocess.call([opener, elemento])
 
     def completePath(fileName):
-        pathFromRot = os.getcwd() + "/" + fileName
+        pathFromRot = os.getcwd() + os.path.sep + fileName
         return pathFromRot
 
     class Dialogo(QDialog):
@@ -307,4 +360,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
